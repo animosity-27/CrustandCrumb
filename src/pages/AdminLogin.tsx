@@ -5,7 +5,7 @@ import type { Page } from '@/lib/pages';
 import { CrustLogo } from '@/components/CrustLogo';
 
 export function AdminLogin({ onNavigate }: { onNavigate: (p: Page) => void }) {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, getRole } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +29,13 @@ export function AdminLogin({ onNavigate }: { onNavigate: (p: Page) => void }) {
       if (signInError) {
         setError('Invalid email or password. Please try again.');
       } else {
-        onNavigate('admin');
+        const role = await getRole();
+
+        if (role === 'admin') {
+          onNavigate('admin');
+        } else {
+          onNavigate('home');
+        }
       }
     } else {
       const { error: signUpError } = await signUp(email, password);
@@ -142,8 +148,8 @@ export function AdminLogin({ onNavigate }: { onNavigate: (p: Page) => void }) {
               {loading
                 ? 'Please wait...'
                 : mode === 'signin'
-                ? 'Sign in'
-                : 'Create account'}
+                  ? 'Sign in'
+                  : 'Create account'}
             </button>
 
           </form>

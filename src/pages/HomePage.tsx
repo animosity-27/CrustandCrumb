@@ -52,25 +52,34 @@ function Hero({ onNavigate }: { onNavigate: (p: Page) => void }) {
       <div className="absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-ocean-400/30 blur-[120px]" />
 
       {/* Floating breads */}
+      {/* Floating bakery images */}
       <FloatingBread
-        src="https://images.pexels.com/photos/7541727/pexels-photo-7541727.jpeg?auto=compress&cs=tinysrgb&w=400"
-        alt="Sourdough loaf"
+        src="https://i.imgur.com/GydtxWu.jpeg"
+        alt="Bakery product"
         className="absolute right-[8%] top-[24%] h-40 w-40 lg:h-56 lg:w-56"
-        style={{ transform: `translate(${offset.x * 1.5}px, ${offset.y * 1.5}px)` }}
+        style={{
+          transform: `translate(${offset.x * 1.5}px, ${offset.y * 1.5}px)`,
+        }}
         floatClass="animate-float-slow"
       />
+
       <FloatingBread
-        src="https://images.pexels.com/photos/9176854/pexels-photo-9176854.jpeg?auto=compress&cs=tinysrgb&w=400"
-        alt="Croissant"
+        src="https://i.imgur.com/UXWvEGK.jpeg"
+        alt="Bakery product"
         className="absolute right-[28%] top-[60%] h-28 w-28 lg:h-40 lg:w-40"
-        style={{ transform: `translate(${offset.x * -1.2}px, ${offset.y * -1.2}px)` }}
+        style={{
+          transform: `translate(${offset.x * -1.2}px, ${offset.y * -1.2}px)`,
+        }}
         floatClass="animate-float-slower"
       />
+
       <FloatingBread
-        src="https://images.pexels.com/photos/965741/pexels-photo-965741.jpeg?auto=compress&cs=tinysrgb&w=400"
-        alt="Chocolate croissant"
+        src="https://i.imgur.com/Mcb2MR9.jpg"
+        alt="Bakery product"
         className="absolute right-[3%] bottom-[14%] h-24 w-24 lg:h-36 lg:w-36"
-        style={{ transform: `translate(${offset.x * 0.8}px, ${offset.y * 0.8}px)` }}
+        style={{
+          transform: `translate(${offset.x * 0.8}px, ${offset.y * 0.8}px)`,
+        }}
         floatClass="animate-float-slow"
       />
 
@@ -94,7 +103,7 @@ function Hero({ onNavigate }: { onNavigate: (p: Page) => void }) {
           </h1>
           <p className="reveal mt-6 max-w-md text-lg leading-relaxed text-cream/75" data-delay="2">
             Wild yeast, local flour, and a 48-hour wait. We bake sourdough, laminated
-            pastries, and cakes the slow way — because good bread can't be rushed.
+            pastries, and cakes the slow way, because good bread can't be rushed.
           </p>
           <div className="reveal mt-8 flex flex-wrap gap-3" data-delay="3">
             <button onClick={() => onNavigate('menu')} className="btn-primary text-base">
@@ -113,16 +122,6 @@ function Hero({ onNavigate }: { onNavigate: (p: Page) => void }) {
             <HeroStat value="48h" label="Ferment" />
             <HeroStat value="6 AM" label="Fresh daily" />
             <HeroStat value="100%" label="From scratch" />
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll cue */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-cream/50">
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-xs uppercase tracking-[0.3em]">Scroll</span>
-          <div className="flex h-10 w-6 items-start justify-center rounded-full border-2 border-cream/30 p-1.5">
-            <div className="h-2 w-1 animate-bounce rounded-full bg-gold" />
           </div>
         </div>
       </div>
@@ -153,9 +152,21 @@ function FloatingBread({
   floatClass: string;
 }) {
   return (
-    <div className={`${className} ${floatClass} pointer-events-none`} style={style}>
-      <div className="h-full w-full overflow-hidden rounded-full border-4 border-cream/10 shadow-crust">
-        <img src={src} alt={alt} className="h-full w-full object-cover" />
+    <div
+      className={className}
+      style={{
+        ...style,
+        transition: 'transform 0.6s ease-out',
+      }}
+    >
+      <div className={`${floatClass} h-full w-full`}>
+        <div className="h-full w-full overflow-hidden rounded-full border-4 border-cream/10 shadow-crust">
+          <img
+            src={src}
+            alt={alt}
+            className="h-full w-full object-cover"
+          />
+        </div>
       </div>
     </div>
   );
