@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { CartProvider } from '@/context/CartContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -16,6 +16,7 @@ import { MenuPage } from '@/pages/MenuPage';
 import { PhilosophyPage } from '@/pages/PhilosophyPage';
 import { VisitPage } from '@/pages/VisitPage';
 import { ReviewsPage } from '@/pages/ReviewsPage';
+
 import { AdminLogin } from '@/pages/AdminLogin';
 import { AdminPage } from '@/pages/AdminPage';
 
@@ -34,52 +35,49 @@ function Shell() {
 
   const { session, loading, getRole } = useAuth();
 
-  const [page, setPage] = useState<Page>('home');
+  const [page, setPage] = useState<Page>(() => {
+
+    const saved =
+      localStorage.getItem('currentPage') as Page;
+
+    if (saved && validPages.includes(saved)) {
+      return saved;
+    }
+
+    return 'home';
+
+  });
+
+
   const [isAdmin, setIsAdmin] = useState(false);
-  const [checkingRole, setCheckingRole] = useState(true);
+  const [checkingRole, setCheckingRole] = useState(false);
 
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [trackOpen, setTrackOpen] = useState(false);
 
 
-  // Restore page AFTER app loads
-  useEffect(() => {
 
-    const saved =
-      localStorage.getItem('currentPage') as Page;
+  async function checkAdmin() {
 
-
-    if (saved && validPages.includes(saved)) {
-      setPage(saved);
-    }
-
-  }, []);
-
-
-
-  // Check admin role
-  useEffect(() => {
-
-    async function check() {
-
-      if (!session) {
-        setIsAdmin(false);
-        setCheckingRole(false);
-        return;
-      }
-
-
-      const role = await getRole();
-
-      setIsAdmin(role === 'admin');
-      setCheckingRole(false);
-
+    if (!session) {
+      setIsAdmin(false);
+      return;
     }
 
 
-    check();
+    const role = await getRole();
 
-  }, [session, getRole]);
+    setIsAdmin(role === 'admin');
+
+  }
+
+
+
+  useState(() => {
+
+    checkAdmin();
+
+  });
 
 
 
@@ -90,11 +88,13 @@ function Shell() {
       newPage
     );
 
+
     setPage(newPage);
 
+
     window.scrollTo({
-      top:0,
-      behavior:'smooth'
+      top: 0,
+      behavior: 'smooth'
     });
 
   };
@@ -105,7 +105,9 @@ function Shell() {
 
     return (
       <div className="flex min-h-screen items-center justify-center bg-ocean-900">
+
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent"/>
+
       </div>
     );
 
@@ -113,29 +115,24 @@ function Shell() {
 
 
 
-  if(page === 'admin') {
+  if (page === 'admin') {
 
 
-    if(!session) {
-
-      return (
-        <AdminLogin onNavigate={navigate}/>
-      );
-
-    }
-
-
-    if(!isAdmin) {
+    if (!session || !isAdmin) {
 
       return (
-        <AdminLogin onNavigate={navigate}/>
+        <AdminLogin
+          onNavigate={navigate}
+        />
       );
 
     }
 
 
     return (
-      <AdminPage onNavigate={navigate}/>
+      <AdminPage
+        onNavigate={navigate}
+      />
     );
 
   }
@@ -145,55 +142,68 @@ function Shell() {
   return (
 
     <>
+
       <Navbar
         page={page}
         onNavigate={navigate}
-        onOpenTrack={()=>setTrackOpen(true)}
+        onOpenTrack={() => setTrackOpen(true)}
       />
 
 
       <main>
 
-        {page==='home' &&
+
+        {page === 'home' &&
           <HomePage onNavigate={navigate}/>
         }
 
-        {page==='menu' &&
+
+        {page === 'menu' &&
           <MenuPage/>
         }
 
-        {page==='philosophy' &&
+
+        {page === 'philosophy' &&
           <PhilosophyPage onNavigate={navigate}/>
         }
 
-        {page==='visit' &&
+
+        {page === 'visit' &&
           <VisitPage/>
         }
 
-        {page==='reviews' &&
+
+        {page === 'reviews' &&
           <ReviewsPage/>
         }
+
 
       </main>
 
 
-      <Footer onNavigate={navigate}/>
+
+      <Footer
+        onNavigate={navigate}
+      />
+
 
 
       <CartDrawer
-        onCheckout={()=>setCheckoutOpen(true)}
+        onCheckout={() => setCheckoutOpen(true)}
       />
+
 
 
       <CheckoutModal
         open={checkoutOpen}
-        onClose={()=>setCheckoutOpen(false)}
+        onClose={() => setCheckoutOpen(false)}
       />
+
 
 
       <TrackOrderModal
         open={trackOpen}
-        onClose={()=>setTrackOpen(false)}
+        onClose={() => setTrackOpen(false)}
       />
 
     </>
@@ -204,9 +214,9 @@ function Shell() {
 
 
 
-export default function App(){
+export default function App() {
 
-  return(
+  return (
 
     <AuthProvider>
 

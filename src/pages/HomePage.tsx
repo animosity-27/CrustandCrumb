@@ -3,7 +3,7 @@ import { ArrowRight, Wheat, Clock, Flame, Sparkles, Star, Quote } from 'lucide-r
 import type { Page } from '@/lib/pages';
 import type { Product, Review } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
-import { useReveal, useMouseParallax } from '@/hooks/useReveal';
+import { useReveal } from '@/hooks/useReveal';
 import { useCart } from '@/context/CartContext';
 import { formatPeso } from '@/lib/format';
 
@@ -39,7 +39,7 @@ export function HomePage({ onNavigate }: { onNavigate: (p: Page) => void }) {
 
 /* ---------------------------------- HERO --------------------------------- */
 function Hero({ onNavigate }: { onNavigate: (p: Page) => void }) {
-  const { ref, offset } = useMouseParallax<HTMLDivElement>(25);
+  const ref = useRef<HTMLDivElement>(null);
 
   return (
     <section
@@ -55,21 +55,15 @@ function Hero({ onNavigate }: { onNavigate: (p: Page) => void }) {
       {/* Floating bakery images */}
       <FloatingBread
         src="https://i.imgur.com/GydtxWu.jpeg"
-        alt="Bakery product"
+        alt="Fresh bread"
         className="absolute right-[8%] top-[24%] h-40 w-40 lg:h-56 lg:w-56"
-        style={{
-          transform: `translate(${offset.x * 1.5}px, ${offset.y * 1.5}px)`,
-        }}
         floatClass="animate-float-slow"
       />
 
       <FloatingBread
         src="https://i.imgur.com/UXWvEGK.jpeg"
-        alt="Bakery product"
+        alt="Fresh pastry"
         className="absolute right-[28%] top-[60%] h-28 w-28 lg:h-40 lg:w-40"
-        style={{
-          transform: `translate(${offset.x * -1.2}px, ${offset.y * -1.2}px)`,
-        }}
         floatClass="animate-float-slower"
       />
 
@@ -77,9 +71,6 @@ function Hero({ onNavigate }: { onNavigate: (p: Page) => void }) {
         src="https://i.imgur.com/Mcb2MR9.jpg"
         alt="Bakery product"
         className="absolute right-[3%] bottom-[14%] h-24 w-24 lg:h-36 lg:w-36"
-        style={{
-          transform: `translate(${offset.x * 0.8}px, ${offset.y * 0.8}px)`,
-        }}
         floatClass="animate-float-slow"
       />
 
@@ -102,8 +93,7 @@ function Hero({ onNavigate }: { onNavigate: (p: Page) => void }) {
             <span className="italic font-300">patience.</span>
           </h1>
           <p className="reveal mt-6 max-w-md text-lg leading-relaxed text-cream/75" data-delay="2">
-            Wild yeast, local flour, and a 48-hour wait. We bake sourdough, laminated
-            pastries, and cakes the slow way, because good bread can't be rushed.
+            Freshly baked breads, pastries, and handcrafted drinks made with quality ingredients.
           </p>
           <div className="reveal mt-8 flex flex-wrap gap-3" data-delay="3">
             <button onClick={() => onNavigate('menu')} className="btn-primary text-base">
