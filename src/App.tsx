@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { CartProvider } from '@/context/CartContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import type { Page } from '@/lib/pages';
+
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CartDrawer } from '@/components/CartDrawer';
 import { CheckoutModal } from '@/components/CheckoutModal';
 import { TrackOrderModal } from '@/components/TrackOrderModal';
+
 import { HomePage } from '@/pages/HomePage';
 import { MenuPage } from '@/pages/MenuPage';
 import { PhilosophyPage } from '@/pages/PhilosophyPage';
@@ -15,32 +17,57 @@ import { ReviewsPage } from '@/pages/ReviewsPage';
 import { AdminLogin } from '@/pages/AdminLogin';
 import { AdminPage } from '@/pages/AdminPage';
 
+
 function Shell() {
   const { session, loading } = useAuth();
-  const [page, setPage] = useState<Page>('home');
+
+  const getInitialPage = (): Page => {
+    const hash = window.location.hash.replace('#', '') as Page;
+
+    if (
+      hash === 'home' ||
+      hash === 'menu' ||
+      hash === 'philosophy' ||
+      hash === 'visit' ||
+      hash === 'reviews' ||
+      hash === 'admin'
+    ) {
+      return hash;
+    }
+
+    return 'home';
+  };
+
+  const [page, setPage] = useState<Page>(getInitialPage);
+
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [trackOpen, setTrackOpen] = useState(false);
 
-  // Scroll progress bar
+
   useEffect(() => {
-    const bar = document.getElementById('scroll-progress');
-    if (!bar) return;
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? window.scrollY / max : 0;
-      bar.style.transform = `scaleX(${p})`;
+    const handleHashChange = () => {
+      setPage(getInitialPage());
     };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, []);
 
+
   const navigate = (p: Page) => {
+    window.location.hash = p;
     setPage(p);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   };
 
-  // Admin route: login or dashboard
+
   if (page === 'admin') {
     if (loading) {
       return (
@@ -49,6 +76,7 @@ function Shell() {
         </div>
       );
     }
+
     return session ? (
       <AdminPage onNavigate={navigate} />
     ) : (
@@ -56,9 +84,15 @@ function Shell() {
     );
   }
 
+
   return (
     <>
-      <Navbar page={page} onNavigate={navigate} onOpenTrack={() => setTrackOpen(true)} />
+      <Navbar
+        page={page}
+        onNavigate={navigate}
+        onOpenTrack={() => setTrackOpen(true)}
+      />
+
       <main>
         {page === 'home' && <HomePage onNavigate={navigate} />}
         {page === 'menu' && <MenuPage />}
@@ -66,14 +100,26 @@ function Shell() {
         {page === 'visit' && <VisitPage />}
         {page === 'reviews' && <ReviewsPage />}
       </main>
+
       <Footer onNavigate={navigate} />
 
-      <CartDrawer onCheckout={() => setCheckoutOpen(true)} />
-      <CheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
-      <TrackOrderModal open={trackOpen} onClose={() => setTrackOpen(false)} />
+      <CartDrawer
+        onCheckout={() => setCheckoutOpen(true)}
+      />
+
+      <CheckoutModal
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+      />
+
+      <TrackOrderModal
+        open={trackOpen}
+        onClose={() => setTrackOpen(false)}
+      />
     </>
   );
 }
+
 
 export default function App() {
   return (

@@ -85,6 +85,7 @@ export function AdminPage({ onNavigate }: { onNavigate: (p: Page) => void }) {
 
   const handleSignOut = async () => {
     await signOut();
+    localStorage.removeItem('page');
     onNavigate('home');
   };
 
@@ -125,9 +126,8 @@ export function AdminPage({ onNavigate }: { onNavigate: (p: Page) => void }) {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`relative flex items-center gap-2 px-4 py-4 text-sm font-semibold transition-colors ${
-                tab === t.id ? 'text-ocean-500' : 'text-crust-600 hover:text-crust-900'
-              }`}
+              className={`relative flex items-center gap-2 px-4 py-4 text-sm font-semibold transition-colors ${tab === t.id ? 'text-ocean-500' : 'text-crust-600 hover:text-crust-900'
+                }`}
             >
               <t.icon className="h-4 w-4" /> {t.label}
               {t.id === 'orders' && stats.live > 0 && (
@@ -211,9 +211,8 @@ function OverviewTab({
                 <li key={p.id} className="flex items-center justify-between rounded-xl bg-crust-50 px-3 py-2.5">
                   <span className="text-sm font-semibold text-crust-800">{p.name}</span>
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                      p.stock <= 0 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
-                    }`}
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${p.stock <= 0 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                      }`}
                   >
                     {p.stock <= 0 ? 'Out' : `${p.stock} left`}
                   </span>
@@ -379,13 +378,12 @@ function InventoryTab({ products, onReload }: { products: Product[]; onReload: (
                         />
                       ) : (
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${
-                            p.stock <= 0
+                          className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${p.stock <= 0
                               ? 'bg-red-100 text-red-700'
                               : p.stock <= 5
-                              ? 'bg-amber-100 text-amber-700'
-                              : 'bg-green-100 text-green-700'
-                          }`}
+                                ? 'bg-amber-100 text-amber-700'
+                                : 'bg-green-100 text-green-700'
+                            }`}
                         >
                           {p.stock}
                         </span>
@@ -504,9 +502,8 @@ function OrdersTab({ orders, onReload }: { orders: Order[]; onReload: () => Prom
           <button
             key={f.id}
             onClick={() => setFilter(f.id)}
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
-              filter === f.id ? 'bg-ocean-500 text-cream' : 'bg-white text-crust-700 hover:bg-crust-100'
-            }`}
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${filter === f.id ? 'bg-ocean-500 text-cream' : 'bg-white text-crust-700 hover:bg-crust-100'
+              }`}
           >
             <f.icon className="h-4 w-4" /> {f.label}
           </button>

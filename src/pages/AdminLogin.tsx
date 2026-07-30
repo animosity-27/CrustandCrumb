@@ -24,6 +24,9 @@ export function AdminLogin({ onNavigate }: { onNavigate: (p: Page) => void }) {
       if (signInError) {
         setError('Invalid email or password. Please try again.');
       }
+      else {
+        onNavigate('admin');
+      }
     } else {
       const { error: signUpError } = await signUp(email, password);
       setLoading(false);
