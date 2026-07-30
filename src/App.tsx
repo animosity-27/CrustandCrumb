@@ -20,16 +20,24 @@ import { AdminLogin } from '@/pages/AdminLogin';
 import { AdminPage } from '@/pages/AdminPage';
 
 
-
 function Shell() {
+
   const { session, loading, getRole } = useAuth();
+
+  const [page, setPage] = useState<Page>('home');
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingRole, setCheckingRole] = useState(true);
 
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [trackOpen, setTrackOpen] = useState(false);
 
-  const getInitialPage = (): Page => {
-    const saved = localStorage.getItem('currentPage') as Page;
+
+
+  // Restore page without URL hash
+  useEffect(() => {
+
+    const saved = sessionStorage.getItem('currentPage') as Page | null;
 
     if (
       saved === 'home' ||
@@ -39,24 +47,17 @@ function Shell() {
       saved === 'reviews' ||
       saved === 'admin'
     ) {
-      return saved;
+      setPage(saved);
     }
 
-    return 'home';
-  };
-
-
-  const [page, setPage] = useState<Page>(getInitialPage);
-
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [trackOpen, setTrackOpen] = useState(false);
+  }, []);
 
 
 
-  // Check if logged-in user is admin
+  // Check admin role
   useEffect(() => {
 
-    async function checkAdmin() {
+    async function checkRole() {
 
       if (!session) {
         setIsAdmin(false);
@@ -73,35 +74,9 @@ function Shell() {
     }
 
 
-    checkAdmin();
+    checkRole();
 
   }, [session, getRole]);
-
-
-
-
-
-  useEffect(() => {
-
-    const handleHashChange = () => {
-      setPage(getInitialPage());
-    };
-
-
-    window.addEventListener(
-      'hashchange',
-      handleHashChange
-    );
-
-
-    return () => {
-      window.removeEventListener(
-        'hashchange',
-        handleHashChange
-      );
-    };
-
-  }, []);
 
 
 
@@ -110,13 +85,14 @@ function Shell() {
 
     setPage(p);
 
-    localStorage.setItem('currentPage', p);
-
-    window.location.hash = p;
+    sessionStorage.setItem(
+      'currentPage',
+      p
+    );
 
     window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
+      top:0,
+      behavior:'smooth'
     });
 
   };
@@ -124,15 +100,18 @@ function Shell() {
 
 
 
+  // ADMIN PAGE
 
-  // ADMIN AREA
   if (page === 'admin') {
+
 
     if (loading || checkingRole) {
 
       return (
         <div className="flex min-h-screen items-center justify-center bg-ocean-900 text-cream">
+
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-cream/30 border-t-cream" />
+
         </div>
       );
 
@@ -140,19 +119,16 @@ function Shell() {
 
 
 
-    // Not logged in
     if (!session) {
 
       return (
-        <AdminLogin onNavigate={navigate} />
+        <AdminLogin onNavigate={navigate}/>
       );
 
     }
 
 
 
-
-    // Logged in but not admin
     if (!isAdmin) {
 
       navigate('home');
@@ -163,10 +139,8 @@ function Shell() {
 
 
 
-
-    // Admin account
     return (
-      <AdminPage onNavigate={navigate} />
+      <AdminPage onNavigate={navigate}/>
     );
 
   }
@@ -177,6 +151,8 @@ function Shell() {
 
   return (
     <>
+
+
       <Navbar
         page={page}
         onNavigate={navigate}
@@ -184,27 +160,33 @@ function Shell() {
       />
 
 
+
       <main>
 
-        {page === 'home' && (
-          <HomePage onNavigate={navigate} />
-        )}
+        {page === 'home' &&
+          <HomePage onNavigate={navigate}/>
+        }
 
-        {page === 'menu' && (
-          <MenuPage />
-        )}
 
-        {page === 'philosophy' && (
-          <PhilosophyPage onNavigate={navigate} />
-        )}
+        {page === 'menu' &&
+          <MenuPage/>
+        }
 
-        {page === 'visit' && (
-          <VisitPage />
-        )}
 
-        {page === 'reviews' && (
-          <ReviewsPage />
-        )}
+        {page === 'philosophy' &&
+          <PhilosophyPage onNavigate={navigate}/>
+        }
+
+
+        {page === 'visit' &&
+          <VisitPage/>
+        }
+
+
+        {page === 'reviews' &&
+          <ReviewsPage/>
+        }
+
 
       </main>
 
@@ -234,6 +216,7 @@ function Shell() {
         onClose={() => setTrackOpen(false)}
       />
 
+
     </>
   );
 
@@ -242,7 +225,7 @@ function Shell() {
 
 
 
-export default function App() {
+export default function App(){
 
   return (
 
@@ -250,7 +233,7 @@ export default function App() {
 
       <CartProvider>
 
-        <Shell />
+        <Shell/>
 
       </CartProvider>
 
