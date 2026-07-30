@@ -20,12 +20,21 @@ import { AdminLogin } from '@/pages/AdminLogin';
 import { AdminPage } from '@/pages/AdminPage';
 
 
+const validPages: Page[] = [
+  'home',
+  'menu',
+  'philosophy',
+  'visit',
+  'reviews',
+  'admin',
+];
+
+
 function Shell() {
 
   const { session, loading, getRole } = useAuth();
 
   const [page, setPage] = useState<Page>('home');
-
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingRole, setCheckingRole] = useState(true);
 
@@ -33,20 +42,14 @@ function Shell() {
   const [trackOpen, setTrackOpen] = useState(false);
 
 
-
-  // Restore page without URL hash
+  // Restore page AFTER app loads
   useEffect(() => {
 
-    const saved = sessionStorage.getItem('currentPage') as Page | null;
+    const saved =
+      localStorage.getItem('currentPage') as Page;
 
-    if (
-      saved === 'home' ||
-      saved === 'menu' ||
-      saved === 'philosophy' ||
-      saved === 'visit' ||
-      saved === 'reviews' ||
-      saved === 'admin'
-    ) {
+
+    if (saved && validPages.includes(saved)) {
       setPage(saved);
     }
 
@@ -57,7 +60,7 @@ function Shell() {
   // Check admin role
   useEffect(() => {
 
-    async function checkRole() {
+    async function check() {
 
       if (!session) {
         setIsAdmin(false);
@@ -74,21 +77,20 @@ function Shell() {
     }
 
 
-    checkRole();
+    check();
 
   }, [session, getRole]);
 
 
 
+  const navigate = (newPage: Page) => {
 
-  const navigate = (p: Page) => {
-
-    setPage(p);
-
-    sessionStorage.setItem(
+    localStorage.setItem(
       'currentPage',
-      p
+      newPage
     );
+
+    setPage(newPage);
 
     window.scrollTo({
       top:0,
@@ -99,27 +101,22 @@ function Shell() {
 
 
 
+  if (loading || checkingRole) {
 
-  // ADMIN PAGE
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-ocean-900">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent"/>
+      </div>
+    );
 
-  if (page === 'admin') {
-
-
-    if (loading || checkingRole) {
-
-      return (
-        <div className="flex min-h-screen items-center justify-center bg-ocean-900 text-cream">
-
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-cream/30 border-t-cream" />
-
-        </div>
-      );
-
-    }
+  }
 
 
 
-    if (!session) {
+  if(page === 'admin') {
+
+
+    if(!session) {
 
       return (
         <AdminLogin onNavigate={navigate}/>
@@ -128,15 +125,13 @@ function Shell() {
     }
 
 
+    if(!isAdmin) {
 
-    if (!isAdmin) {
-
-      navigate('home');
-
-      return null;
+      return (
+        <AdminLogin onNavigate={navigate}/>
+      );
 
     }
-
 
 
     return (
@@ -147,87 +142,71 @@ function Shell() {
 
 
 
-
-
   return (
+
     <>
-
-
       <Navbar
         page={page}
         onNavigate={navigate}
-        onOpenTrack={() => setTrackOpen(true)}
+        onOpenTrack={()=>setTrackOpen(true)}
       />
-
 
 
       <main>
 
-        {page === 'home' &&
+        {page==='home' &&
           <HomePage onNavigate={navigate}/>
         }
 
-
-        {page === 'menu' &&
+        {page==='menu' &&
           <MenuPage/>
         }
 
-
-        {page === 'philosophy' &&
+        {page==='philosophy' &&
           <PhilosophyPage onNavigate={navigate}/>
         }
 
-
-        {page === 'visit' &&
+        {page==='visit' &&
           <VisitPage/>
         }
 
-
-        {page === 'reviews' &&
+        {page==='reviews' &&
           <ReviewsPage/>
         }
-
 
       </main>
 
 
-
-      <Footer
-        onNavigate={navigate}
-      />
-
+      <Footer onNavigate={navigate}/>
 
 
       <CartDrawer
-        onCheckout={() => setCheckoutOpen(true)}
+        onCheckout={()=>setCheckoutOpen(true)}
       />
-
 
 
       <CheckoutModal
         open={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
+        onClose={()=>setCheckoutOpen(false)}
       />
-
 
 
       <TrackOrderModal
         open={trackOpen}
-        onClose={() => setTrackOpen(false)}
+        onClose={()=>setTrackOpen(false)}
       />
 
-
     </>
+
   );
 
 }
 
 
 
-
 export default function App(){
 
-  return (
+  return(
 
     <AuthProvider>
 

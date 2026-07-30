@@ -85,7 +85,9 @@ export function AdminPage({ onNavigate }: { onNavigate: (p: Page) => void }) {
 
   const handleSignOut = async () => {
     await signOut();
-    sessionStorage.removeItem('currentPage');
+
+    localStorage.removeItem('currentPage');
+
     onNavigate('home');
   };
 
