@@ -185,7 +185,7 @@ Track Order
 
 <button
 onClick={() => go('admin')}
-className="hidden h-10 w-10 items-center justify-center rounded-full text-crust-700 hover:bg-crust-100 hover:text-ocean-500 md:inline-flex"
+className="flex h-10 w-10 items-center justify-center rounded-full text-crust-700 hover:bg-crust-100 hover:text-ocean-500"
 title="Admin"
 >
 <User className="h-5 w-5"/>

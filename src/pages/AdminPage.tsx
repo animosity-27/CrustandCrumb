@@ -103,7 +103,7 @@ export function AdminPage({ onNavigate }: { onNavigate: (p: Page) => void }) {
     <div ref={revealRef} className="min-h-screen bg-sand pt-20">
       {/* Top bar */}
       <div className="border-b border-crust-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap gap-1 px-6 lg:px-8">
           <div>
             <h1 className="font-display text-2xl font-700 text-crust-900">Bakery Dashboard</h1>
             <p className="text-sm text-crust-500">Crust & Crumb · Calapan City</p>
@@ -119,7 +119,7 @@ export function AdminPage({ onNavigate }: { onNavigate: (p: Page) => void }) {
 
       {/* Tabs */}
       <div className="border-b border-crust-200 bg-white">
-        <div className="mx-auto flex max-w-7xl gap-1 px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap gap-1 px-6 lg:px-8">
           {([
             { id: 'overview', label: 'Overview', icon: TrendingUp },
             { id: 'inventory', label: 'Inventory', icon: Package },
@@ -198,7 +198,7 @@ function OverviewTab({
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Low stock alert */}
         <div className="rounded-3xl bg-white p-6 shadow-soft lg:col-span-1">
           <div className="flex items-center gap-2">
