@@ -29,17 +29,17 @@ function Shell() {
 
 
   const getInitialPage = (): Page => {
-    const hash = window.location.hash.replace('#', '') as Page;
+    const saved = localStorage.getItem('currentPage') as Page;
 
     if (
-      hash === 'home' ||
-      hash === 'menu' ||
-      hash === 'philosophy' ||
-      hash === 'visit' ||
-      hash === 'reviews' ||
-      hash === 'admin'
+      saved === 'home' ||
+      saved === 'menu' ||
+      saved === 'philosophy' ||
+      saved === 'visit' ||
+      saved === 'reviews' ||
+      saved === 'admin'
     ) {
-      return hash;
+      return saved;
     }
 
     return 'home';
@@ -108,9 +108,11 @@ function Shell() {
 
   const navigate = (p: Page) => {
 
-    window.location.hash = p;
-
     setPage(p);
+
+    localStorage.setItem('currentPage', p);
+
+    window.location.hash = p;
 
     window.scrollTo({
       top: 0,
