@@ -12,39 +12,28 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
 
-
 type AuthContextValue = {
-
   session: Session | null;
-
   loading: boolean;
-
 
   signIn: (
     email: string,
     password: string
   ) => Promise<{ error: string | null }>;
 
-
   signUp: (
     email: string,
     password: string
   ) => Promise<{ error: string | null }>;
 
-
   signOut: () => Promise<void>;
 
-
   getRole: () => Promise<string>;
-
 };
-
 
 
 const AuthContext =
   createContext<AuthContextValue | null>(null);
-
-
 
 
 
@@ -54,32 +43,24 @@ export function AuthProvider({
   children: ReactNode;
 }) {
 
-
   const [session, setSession] =
     useState<Session | null>(null);
-
 
   const [loading, setLoading] =
     useState(true);
 
 
 
-
-
   useEffect(() => {
-
 
     let mounted = true;
 
 
-
-    async function loadSession() {
-
+    async function initialize() {
 
       const {
         data
       } = await supabase.auth.getSession();
-
 
 
       if (!mounted) return;
@@ -89,44 +70,30 @@ export function AuthProvider({
 
       setLoading(false);
 
-
     }
 
 
-
-    loadSession();
-
-
+    initialize();
 
 
     const {
       data: listener
-    } =
-      supabase.auth.onAuthStateChange(
-        (_event, newSession)=>{
+    } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+
+        setSession(newSession);
+
+      }
+    );
 
 
-          setSession(newSession);
-
-
-        }
-      );
-
-
-
-
-
-    return ()=>{
-
+    return () => {
 
       mounted = false;
 
-
       listener.subscription.unsubscribe();
 
-
     };
-
 
 
   }, []);
@@ -135,50 +102,28 @@ export function AuthProvider({
 
 
 
-
-
-
   const signIn = useCallback(
-
     async (
-      email:string,
-      password:string
-    )=>{
-
+      email: string,
+      password: string
+    ) => {
 
       const {
         error
       } =
       await supabase.auth.signInWithPassword({
-
         email,
-
         password,
-
       });
 
 
-
-
-
       return {
-
-        error:
-          error
-          ? error.message
-          : null,
-
+        error: error ? error.message : null,
       };
 
-
     },
-
     []
-
   );
-
-
-
 
 
 
@@ -186,46 +131,27 @@ export function AuthProvider({
 
 
   const signUp = useCallback(
-
     async (
-      email:string,
-      password:string
-    )=>{
-
+      email: string,
+      password: string
+    ) => {
 
       const {
         error
       } =
       await supabase.auth.signUp({
-
         email,
-
         password,
-
       });
 
 
-
-
-
-
       return {
-
-        error:
-          error
-          ? error.message
-          : null,
-
+        error: error ? error.message : null,
       };
 
-
     },
-
     []
-
   );
-
-
 
 
 
@@ -234,23 +160,15 @@ export function AuthProvider({
 
 
   const signOut = useCallback(
-
-    async ()=>{
-
+    async () => {
 
       await supabase.auth.signOut();
 
-
       setSession(null);
 
-
     },
-
     []
-
   );
-
-
 
 
 
@@ -259,44 +177,34 @@ export function AuthProvider({
 
 
   const getRole = useCallback(
-
-    async ()=>{
-
+    async () => {
 
       if (!session) {
-
         return 'customer';
-
       }
-
-
-
-
 
 
       const {
         data,
         error
-      } = await supabase
-
+      } =
+      await supabase
         .from('profiles')
-
         .select('role')
-
         .eq(
           'id',
           session.user.id
         )
-
-        .single();
-
+        .maybeSingle();
 
 
 
+      if (error) {
 
-
-
-      if (error || !data) {
+        console.error(
+          'Role lookup failed:',
+          error.message
+        );
 
         return 'customer';
 
@@ -304,18 +212,20 @@ export function AuthProvider({
 
 
 
+      if (!data) {
+
+        return 'customer';
+
+      }
 
 
-      return data.role;
+
+      return data.role ?? 'customer';
 
 
     },
-
     [session]
-
   );
-
-
 
 
 
@@ -326,23 +236,14 @@ export function AuthProvider({
   return (
 
     <AuthContext.Provider
-
       value={{
-
         session,
-
         loading,
-
         signIn,
-
         signUp,
-
         signOut,
-
         getRole,
-
       }}
-
     >
 
       {children}
@@ -358,30 +259,22 @@ export function AuthProvider({
 
 
 
-
 export function useAuth() {
-
 
   const context =
     useContext(AuthContext);
 
 
 
-
   if (!context) {
-
 
     throw new Error(
       'useAuth must be used inside AuthProvider'
     );
 
-
   }
 
 
-
-
   return context;
-
 
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { CartProvider } from '@/context/CartContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -35,10 +35,10 @@ function Shell() {
 
   const { session, loading, getRole } = useAuth();
 
+
   const [page, setPage] = useState<Page>(() => {
 
-    const saved =
-      localStorage.getItem('currentPage') as Page;
+    const saved = localStorage.getItem('currentPage') as Page;
 
     if (saved && validPages.includes(saved)) {
       return saved;
@@ -50,34 +50,44 @@ function Shell() {
 
 
   const [isAdmin, setIsAdmin] = useState(false);
-  const [checkingRole, setCheckingRole] = useState(false);
+  const [checkingRole, setCheckingRole] = useState(true);
 
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [trackOpen, setTrackOpen] = useState(false);
 
 
 
-  async function checkAdmin() {
+  useEffect(() => {
 
-    if (!session) {
-      setIsAdmin(false);
-      return;
+    async function checkAdmin() {
+
+      setCheckingRole(true);
+
+
+      if (!session) {
+
+        setIsAdmin(false);
+        setCheckingRole(false);
+
+        return;
+
+      }
+
+
+      const role = await getRole();
+
+
+      setIsAdmin(role === 'admin');
+      setCheckingRole(false);
+
     }
 
 
-    const role = await getRole();
-
-    setIsAdmin(role === 'admin');
-
-  }
-
-
-
-  useState(() => {
-
     checkAdmin();
 
-  });
+
+  }, [session, getRole]);
+
 
 
 
@@ -101,17 +111,21 @@ function Shell() {
 
 
 
+
   if (loading || checkingRole) {
 
     return (
+
       <div className="flex min-h-screen items-center justify-center bg-ocean-900">
 
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent"/>
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
 
       </div>
+
     );
 
   }
+
 
 
 
@@ -121,21 +135,26 @@ function Shell() {
     if (!session || !isAdmin) {
 
       return (
+
         <AdminLogin
           onNavigate={navigate}
         />
+
       );
 
     }
 
 
     return (
+
       <AdminPage
         onNavigate={navigate}
       />
+
     );
 
   }
+
 
 
 
@@ -151,7 +170,6 @@ function Shell() {
 
 
       <main>
-
 
         {page === 'home' &&
           <HomePage onNavigate={navigate}/>
@@ -176,7 +194,6 @@ function Shell() {
         {page === 'reviews' &&
           <ReviewsPage/>
         }
-
 
       </main>
 
